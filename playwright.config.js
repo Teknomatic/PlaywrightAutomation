@@ -22,7 +22,7 @@ const config = ({
   use: {
     baseURL: 'https://automationexercise.com',
     browserName: 'chromium',
-    headless: false,
+    headless: !!process.env.CI,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
