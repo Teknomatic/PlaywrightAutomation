@@ -1,4 +1,4 @@
-const {test, expect} = require('@playwright/test');
+const {test, expect, request} = require('@playwright/test');
 const {PageObjectManager} = require('../pageObjects/PageObjectManager')
 
 test ('TC1: Register User', async ({page}) => {
@@ -44,6 +44,56 @@ test ('TC1: Register User', async ({page}) => {
     //Account Created screen
     await expect (accountCreatedPage.accountCreatedLabel).toBeVisible();
     await accountCreatedPage.continueButton.click();
+    //Logged-in as user screen
+    await expect (homePage.loggedInAsUserLabel).toBeVisible();
+    await homePage.deleteAccountLink.click();
+    //Account Deleted screen
+    await expect (deleteAccountPage.accountDeletedLabel).toBeVisible();
+    await deleteAccountPage.continueButton.click();
+})
+
+
+test('TC2: Login user with correct email and password', async ({page}) => {
+    const apiContext = await request.newContext();
+    const createAccountResponse = await apiContext.post("https://automationexercise.com/api/createAccount",
+        {
+            multipart:{
+                    name: 'Test User',
+                    email: 'testuser@daemail33.com',
+                    password: 'Control123',
+                    title: 'Mr',
+                    birth_date: '31',
+                    birth_month: '12',
+                    birth_year: '2001',
+                    firstname: 'Melquiades',
+                    lastname: 'Do Nassimento',
+                    company: 'Dos Colas Pet Store',
+                    address1: '123 Casa de Campo st.',
+                    address2: 'Office 23',
+                    country: 'Canada',
+                    zipcode: 'S4P O73',
+                    state: 'Saskatchewan',
+                    city: 'Warman',
+                    mobile_number: '555-565656'
+            },
+        }
+    );
+    const body = JSON.parse(await createAccountResponse.text());
+    expect(body.responseCode).toBe(201)
+
+    const pageObjectManager = new PageObjectManager(page);
+    const homePage = pageObjectManager.getHomePage();
+    const signupLoginPage = pageObjectManager.getSignupLoginPage();
+    const deleteAccountPage = pageObjectManager.getDeleteAccountPage();
+
+    await homePage.navigateTo();
+    await expect(homePage.productsLoaded.last()).toBeVisible(); //verify page is visible successfully
+    await homePage.signupLoginLink.click();
+    //Login screen
+    await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
+    await signupLoginPage.loginEmailInput.fill('testuser@daemail33.com');
+    await signupLoginPage.loginPasswordInput.fill('Control123');
+    await signupLoginPage.loginButton.click();
     //Logged-in as user screen
     await expect (homePage.loggedInAsUserLabel).toBeVisible();
     await homePage.deleteAccountLink.click();

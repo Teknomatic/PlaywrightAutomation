@@ -2,6 +2,12 @@ class SignupLoginPage {
 
     constructor(page) {
         this.page = page;
+        //Login to your account
+        this.loginToYourAccountLabel = page.getByRole('heading', { name: 'Login to your account'});
+        this.loginEmailInput = page.getByTestId('login-email');
+        this.loginPasswordInput = page.getByTestId('login-password');
+        this.loginButton = page.getByTestId('login-button');
+        //New User Signup
         this.newUserSignUpLabel = page.getByRole('heading', { name: 'New User Signup!'});
         this.signupNameInput = page.getByTestId('signup-name');
         this.signupEmailInput = page.getByTestId('signup-email');
