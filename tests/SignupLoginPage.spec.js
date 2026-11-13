@@ -101,3 +101,22 @@ test('TC2: Login user with correct email and password', async ({page}) => {
     await expect (deleteAccountPage.accountDeletedLabel).toBeVisible();
     await deleteAccountPage.continueButton.click();
 })
+
+test('TC3: Login User with incorrect email and password', async ({page}) => {
+    const pageObjectManager = new PageObjectManager(page);
+    const homePage = pageObjectManager.getHomePage();
+    const signupLoginPage = pageObjectManager.getSignupLoginPage();
+    const deleteAccountPage = pageObjectManager.getDeleteAccountPage();
+
+    await homePage.navigateTo();
+    await expect(homePage.productsLoaded.last()).toBeVisible();
+    await homePage.signupLoginLink.click();
+    //Login screen
+    await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
+    await signupLoginPage.loginEmailInput.fill('invalid@daemail33.com');
+    await signupLoginPage.loginPasswordInput.fill('SomeP@ss');
+    await signupLoginPage.loginButton.click();
+    //Error message
+    await expect (signupLoginPage.YourEmailOrPasswordIsIncorrectLabel).toBeVisible();
+
+})
