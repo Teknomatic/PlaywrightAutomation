@@ -1,4 +1,6 @@
-const {test, expect, request} = require('@playwright/test');
+const {test, expect} = require('@playwright/test');
+const { createAccount } = require('../utils/createAccountApi');
+
 const {PageObjectManager} = require('../pageObjects/PageObjectManager')
 
 test ('TC1: Register User', async ({page}) => {
@@ -53,11 +55,9 @@ test ('TC1: Register User', async ({page}) => {
 })
 
 
-test('TC2: Login user with correct email and password', async ({page}) => {
-    const apiContext = await request.newContext();
-    const createAccountResponse = await apiContext.post("https://automationexercise.com/api/createAccount",
-        {
-            multipart:{
+test('TC2: Login user with correct email and password', async ({page, request}) => {
+    // Create a user via API 
+    const account = {
                     name: 'Test User',
                     email: 'testuser@daemail33.com',
                     password: 'Control123',
@@ -75,11 +75,11 @@ test('TC2: Login user with correct email and password', async ({page}) => {
                     state: 'Saskatchewan',
                     city: 'Warman',
                     mobile_number: '555-565656'
-            },
-        }
-    );
-    const body = JSON.parse(await createAccountResponse.text());
-    expect(body.responseCode).toBe(201)
+            };
+    const response = await createAccount(request, account);
+    expect(response.ok()).toBeTruthy();
+    const body = await response.json();
+    expect(body.responseCode).toBe(201);
 
     const pageObjectManager = new PageObjectManager(page);
     const homePage = pageObjectManager.getHomePage();
