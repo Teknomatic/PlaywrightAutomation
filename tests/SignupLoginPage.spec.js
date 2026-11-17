@@ -1,5 +1,6 @@
 const {test, expect} = require('@playwright/test');
 const { createAccount } = require('../utils/createAccountApi');
+const { deleteAccount } = require('../utils/deleteAccountApi');
 
 const {PageObjectManager} = require('../pageObjects/PageObjectManager')
 
@@ -57,7 +58,7 @@ test ('TC1: Register User', async ({page}) => {
 
 test('TC2: Login user with correct email and password', async ({page, request}) => {
     // Create a user via API 
-    const account = {
+    const accountToCreate = {
                     name: 'Test User',
                     email: 'testuser@daemail33.com',
                     password: 'Control123',
@@ -76,10 +77,10 @@ test('TC2: Login user with correct email and password', async ({page, request}) 
                     city: 'Warman',
                     mobile_number: '555-565656'
             };
-    const response = await createAccount(request, account);
-    expect(response.ok()).toBeTruthy();
-    const body = await response.json();
-    expect(body.responseCode).toBe(201);
+    const responseCreate = await createAccount(request, accountToCreate);
+    expect(responseCreate.ok()).toBeTruthy();
+    const bodyCreate = await responseCreate.json();
+    expect(bodyCreate.responseCode).toBe(201);
 
     const pageObjectManager = new PageObjectManager(page);
     const homePage = pageObjectManager.getHomePage();
@@ -119,4 +120,60 @@ test('TC3: Login User with incorrect email and password', async ({page}) => {
     //Error message
     await expect (signupLoginPage.YourEmailOrPasswordIsIncorrectLabel).toBeVisible();
 
+})
+
+test('TC4: Logout User', async ({page, request}) => {
+    // Create a user via API 
+    const accountToCreate = {
+                    name: 'Test User',
+                    email: 'testuser@daemail33.com',
+                    password: 'Control123',
+                    title: 'Mr',
+                    birth_date: '31',
+                    birth_month: '12',
+                    birth_year: '2001',
+                    firstname: 'Melquiades',
+                    lastname: 'Do Nassimento',
+                    company: 'Dos Colas Pet Store',
+                    address1: '123 Casa de Campo st.',
+                    address2: 'Office 23',
+                    country: 'Canada',
+                    zipcode: 'S4P O73',
+                    state: 'Saskatchewan',
+                    city: 'Warman',
+                    mobile_number: '555-565656'
+            };
+    const responseCreate = await createAccount(request, accountToCreate);
+    expect(responseCreate.ok()).toBeTruthy();
+    const bodyCreate = await responseCreate.json();
+    expect(bodyCreate.responseCode).toBe(201);
+
+    const pageObjectManager = new PageObjectManager(page);
+    const homePage = pageObjectManager.getHomePage();
+    const signupLoginPage = pageObjectManager.getSignupLoginPage();
+    const deleteAccountPage = pageObjectManager.getDeleteAccountPage();
+
+    await homePage.navigateTo();
+    await expect(homePage.productsLoaded.last()).toBeVisible();
+    await homePage.signupLoginLink.click();
+    //Login screen
+    await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
+    await signupLoginPage.loginEmailInput.fill('testuser@daemail33.com');
+    await signupLoginPage.loginPasswordInput.fill('Control123');
+    await signupLoginPage.loginButton.click();
+    //Logged in message
+    await expect (homePage.loggedInAsUserLabel).toBeVisible();
+    // Logout action
+    await homePage.logoutLink.click();
+    await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
+
+    //Delete test account
+    const accountToDelete = {
+                    email: 'testuser@daemail33.com',
+                    password: 'Control123'
+            };
+    const responseDelete = await deleteAccount(request, accountToDelete);
+    expect(responseDelete.ok()).toBeTruthy();
+    const bodyDelete = await responseDelete.json();
+    expect(bodyDelete.responseCode).toBe(200);
 })

@@ -1,6 +1,6 @@
-async function createAccount(request, account) {
+async function createAccount(request, accountToCreate) {
   return request.post('/api/createAccount', {
-    multipart: account,
+    multipart: accountToCreate,
   });
 }
 
