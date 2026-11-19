@@ -7,7 +7,8 @@ class SignupLoginPage {
         this.loginEmailInput = page.getByTestId('login-email');
         this.loginPasswordInput = page.getByTestId('login-password');
         this.loginButton = page.getByTestId('login-button');
-        this.YourEmailOrPasswordIsIncorrectLabel = page.getByText('Your email or password is incorrect!', { exact: true });
+        this.yourEmailOrPasswordIsIncorrectLabel = page.getByText('Your email or password is incorrect!', { exact: true });
+        this.emailAddressAlreadyExistsLabel = page.getByText('Email Address already exist!', { exact: true });
         //New User Signup
         this.newUserSignUpLabel = page.getByRole('heading', { name: 'New User Signup!'});
         this.signupNameInput = page.getByTestId('signup-name');

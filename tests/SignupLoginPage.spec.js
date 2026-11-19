@@ -89,7 +89,6 @@ test('TC3: Login User with incorrect email and password', async ({page}) => {
     const pageObjectManager = new PageObjectManager(page);
     const homePage = pageObjectManager.getHomePage();
     const signupLoginPage = pageObjectManager.getSignupLoginPage();
-    const deleteAccountPage = pageObjectManager.getDeleteAccountPage();
 
     await homePage.navigateTo();
     await expect(homePage.productsLoaded.last()).toBeVisible();
@@ -100,7 +99,7 @@ test('TC3: Login User with incorrect email and password', async ({page}) => {
     await signupLoginPage.loginPasswordInput.fill('SomeP@ss');
     await signupLoginPage.loginButton.click();
     //Error message
-    await expect (signupLoginPage.YourEmailOrPasswordIsIncorrectLabel).toBeVisible();
+    await expect (signupLoginPage.yourEmailOrPasswordIsIncorrectLabel).toBeVisible();
 
 })
 
@@ -114,7 +113,6 @@ test('TC4: Logout User', async ({page, request}) => {
     const pageObjectManager = new PageObjectManager(page);
     const homePage = pageObjectManager.getHomePage();
     const signupLoginPage = pageObjectManager.getSignupLoginPage();
-    const deleteAccountPage = pageObjectManager.getDeleteAccountPage();
 
     await homePage.navigateTo();
     await expect(homePage.productsLoaded.last()).toBeVisible();
@@ -129,6 +127,39 @@ test('TC4: Logout User', async ({page, request}) => {
     // Logout action
     await homePage.logoutLink.click();
     await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
+
+    //Delete test account via API
+    const accountToDelete = {
+                    email: testUser.email,
+                    password: testUser.password
+            };
+    const responseDelete = await deleteAccount(request, accountToDelete);
+    expect(responseDelete.ok()).toBeTruthy();
+    const bodyDelete = await responseDelete.json();
+    expect(bodyDelete.responseCode).toBe(200);
+})
+
+test('TC5: Register User with existing email', async ({page, request}) => {
+    // Create a user via API 
+    const responseCreate = await createAccount(request, testUser);
+    expect(responseCreate.ok()).toBeTruthy();
+    const bodyCreate = await responseCreate.json();
+    expect(bodyCreate.responseCode).toBe(201);
+
+    const pageObjectManager = new PageObjectManager(page);
+    const homePage = pageObjectManager.getHomePage();
+    const signupLoginPage = pageObjectManager.getSignupLoginPage();
+
+    //Signup / Login form
+    await homePage.navigateTo();
+    await expect(homePage.productsLoaded.last()).toBeVisible(); //verify page is visible successfully
+    await homePage.signupLoginLink.click();
+    await expect(signupLoginPage.newUserSignUpLabel).toBeVisible();
+    await signupLoginPage.signupNameInput.fill(testUser.name);
+    await signupLoginPage.signupEmailInput.fill(testUser.email);
+    await signupLoginPage.signupButton.click();
+    //Error message
+    await expect (signupLoginPage.emailAddressAlreadyExistsLabel).toBeVisible();
 
     //Delete test account via API
     const accountToDelete = {
