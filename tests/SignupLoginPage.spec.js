@@ -1,8 +1,9 @@
 const {test, expect} = require('@playwright/test');
 const { createAccount } = require('../utils/createAccountApi');
 const { deleteAccount } = require('../utils/deleteAccountApi');
-
+const testUser = require('../testData/testUser');
 const {PageObjectManager} = require('../pageObjects/PageObjectManager')
+
 
 test ('TC1: Register User', async ({page}) => {
     const pageObjectManager = new PageObjectManager(page);
@@ -16,33 +17,33 @@ test ('TC1: Register User', async ({page}) => {
     await expect(homePage.productsLoaded.last()).toBeVisible(); //verify page is visible successfully
     await homePage.signupLoginLink.click();
     await expect(signupLoginPage.newUserSignUpLabel).toBeVisible();
-    await signupLoginPage.signupNameInput.fill('Test User');
-    await signupLoginPage.signupEmailInput.fill('testuser@daemail33.com');
+    await signupLoginPage.signupNameInput.fill(testUser.name);
+    await signupLoginPage.signupEmailInput.fill(testUser.email);
     await signupLoginPage.signupButton.click();
     //Enter Account Information
     await expect(signupLoginPage.enterAccountInformationLabel).toBeVisible();
     await signupLoginPage.mrRadio.click();
-    await signupLoginPage.passwordInput.fill('Control123');
-    await signupLoginPage.dayDropdown.selectOption({ label: '31' });
-    await expect(signupLoginPage.dayDropdown).toHaveValue('31');
-    await signupLoginPage.monthDropdown.selectOption({ label: 'December' });
-    await expect(signupLoginPage.monthDropdown).toHaveValue('12');
-    await signupLoginPage.yearDropdown.selectOption({ label: '2001' });
-    await expect(signupLoginPage.yearDropdown).toHaveValue('2001');
+    await signupLoginPage.passwordInput.fill(testUser.password);
+    await signupLoginPage.dayDropdown.selectOption({ label: testUser.birth_date });
+    await expect(signupLoginPage.dayDropdown).toHaveValue(testUser.birth_date);
+    await signupLoginPage.monthDropdown.selectOption({ label: testUser.birth_month_label });
+    await expect(signupLoginPage.monthDropdown).toHaveValue(testUser.birth_month);
+    await signupLoginPage.yearDropdown.selectOption({ label: testUser.birth_year });
+    await expect(signupLoginPage.yearDropdown).toHaveValue(testUser.birth_year);
     await signupLoginPage.signUpForNewsletterCheckbox.click();
     await signupLoginPage.receiveSpecialOffersCheckbox.click();
     //Address Information
-    await signupLoginPage.firstNameInput.fill('Melquiades')
-    await signupLoginPage.lastNameInput.fill('Do Nassimento')
-    await signupLoginPage.companyInput.fill('Dos Colas Pet Store')
-    await signupLoginPage.address1Input.fill('123 Casa de Campo st.')
-    await signupLoginPage.address2Input.fill('Office 23')
-    await signupLoginPage.countryDropdown.selectOption({ label: 'Canada' });
-    await expect(signupLoginPage.countryDropdown).toHaveValue('Canada');
-    await signupLoginPage.stateInput.fill('Saskatchewan');
-    await signupLoginPage.cityInput.fill('Warman');
-    await signupLoginPage.zipcodeInput.fill('S4P O73');
-    await signupLoginPage.mobileNumberInput.fill('555-565656');
+    await signupLoginPage.firstNameInput.fill(testUser.firstname)
+    await signupLoginPage.lastNameInput.fill(testUser.lastname)
+    await signupLoginPage.companyInput.fill(testUser.company)
+    await signupLoginPage.address1Input.fill(testUser.address1)
+    await signupLoginPage.address2Input.fill(testUser.address2)
+    await signupLoginPage.countryDropdown.selectOption({ label: testUser.country });
+    await expect(signupLoginPage.countryDropdown).toHaveValue(testUser.country);
+    await signupLoginPage.stateInput.fill(testUser.state);
+    await signupLoginPage.cityInput.fill(testUser.city);
+    await signupLoginPage.zipcodeInput.fill(testUser.zipcode);
+    await signupLoginPage.mobileNumberInput.fill(testUser.mobile_number);
     await signupLoginPage.createAccountButton.click();
     //Account Created screen
     await expect (accountCreatedPage.accountCreatedLabel).toBeVisible();
@@ -58,26 +59,7 @@ test ('TC1: Register User', async ({page}) => {
 
 test('TC2: Login user with correct email and password', async ({page, request}) => {
     // Create a user via API 
-    const accountToCreate = {
-                    name: 'Test User',
-                    email: 'testuser@daemail33.com',
-                    password: 'Control123',
-                    title: 'Mr',
-                    birth_date: '31',
-                    birth_month: '12',
-                    birth_year: '2001',
-                    firstname: 'Melquiades',
-                    lastname: 'Do Nassimento',
-                    company: 'Dos Colas Pet Store',
-                    address1: '123 Casa de Campo st.',
-                    address2: 'Office 23',
-                    country: 'Canada',
-                    zipcode: 'S4P O73',
-                    state: 'Saskatchewan',
-                    city: 'Warman',
-                    mobile_number: '555-565656'
-            };
-    const responseCreate = await createAccount(request, accountToCreate);
+    const responseCreate = await createAccount(request, testUser);
     expect(responseCreate.ok()).toBeTruthy();
     const bodyCreate = await responseCreate.json();
     expect(bodyCreate.responseCode).toBe(201);
@@ -92,8 +74,8 @@ test('TC2: Login user with correct email and password', async ({page, request}) 
     await homePage.signupLoginLink.click();
     //Login screen
     await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
-    await signupLoginPage.loginEmailInput.fill('testuser@daemail33.com');
-    await signupLoginPage.loginPasswordInput.fill('Control123');
+    await signupLoginPage.loginEmailInput.fill(testUser.email);
+    await signupLoginPage.loginPasswordInput.fill(testUser.password);
     await signupLoginPage.loginButton.click();
     //Logged-in as user screen
     await expect (homePage.loggedInAsUserLabel).toBeVisible();
@@ -124,26 +106,7 @@ test('TC3: Login User with incorrect email and password', async ({page}) => {
 
 test('TC4: Logout User', async ({page, request}) => {
     // Create a user via API 
-    const accountToCreate = {
-                    name: 'Test User',
-                    email: 'testuser@daemail33.com',
-                    password: 'Control123',
-                    title: 'Mr',
-                    birth_date: '31',
-                    birth_month: '12',
-                    birth_year: '2001',
-                    firstname: 'Melquiades',
-                    lastname: 'Do Nassimento',
-                    company: 'Dos Colas Pet Store',
-                    address1: '123 Casa de Campo st.',
-                    address2: 'Office 23',
-                    country: 'Canada',
-                    zipcode: 'S4P O73',
-                    state: 'Saskatchewan',
-                    city: 'Warman',
-                    mobile_number: '555-565656'
-            };
-    const responseCreate = await createAccount(request, accountToCreate);
+    const responseCreate = await createAccount(request, testUser);
     expect(responseCreate.ok()).toBeTruthy();
     const bodyCreate = await responseCreate.json();
     expect(bodyCreate.responseCode).toBe(201);
@@ -158,8 +121,8 @@ test('TC4: Logout User', async ({page, request}) => {
     await homePage.signupLoginLink.click();
     //Login screen
     await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
-    await signupLoginPage.loginEmailInput.fill('testuser@daemail33.com');
-    await signupLoginPage.loginPasswordInput.fill('Control123');
+    await signupLoginPage.loginEmailInput.fill(testUser.email);
+    await signupLoginPage.loginPasswordInput.fill(testUser.password);
     await signupLoginPage.loginButton.click();
     //Logged in message
     await expect (homePage.loggedInAsUserLabel).toBeVisible();
@@ -167,10 +130,10 @@ test('TC4: Logout User', async ({page, request}) => {
     await homePage.logoutLink.click();
     await expect(signupLoginPage.loginToYourAccountLabel).toBeVisible();
 
-    //Delete test account
+    //Delete test account via API
     const accountToDelete = {
-                    email: 'testuser@daemail33.com',
-                    password: 'Control123'
+                    email: testUser.email,
+                    password: testUser.password
             };
     const responseDelete = await deleteAccount(request, accountToDelete);
     expect(responseDelete.ok()).toBeTruthy();

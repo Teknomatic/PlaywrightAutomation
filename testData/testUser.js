@@ -1,0 +1,20 @@
+module.exports = {
+    name: 'Test User',
+    email: 'testuser@daemail33.com',
+    password: 'Control123',
+    title: 'Mr',
+    birth_date: '31',
+    birth_month: '12',
+    birth_month_label: 'December',
+    birth_year: '2001',
+    firstname: 'Melquiades',
+    lastname: 'Do Nassimento',
+    company: 'Dos Colas Pet Store',
+    address1: '123 Casa de Campo st.',
+    address2: 'Office 23',
+    country: 'Canada',
+    zipcode: 'S4P O73',
+    state: 'Saskatchewan',
+    city: 'Warman',
+    mobile_number: '555-565656'
+};
