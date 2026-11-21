@@ -20,7 +20,7 @@ const config = ({
   },
 
   use: {
-    baseURL: 'https://automationexercise.com',
+    baseURL: process.env.BASE_URL || 'https://automationexercise.com',
     browserName: 'chromium',
     headless: !!process.env.CI,
     screenshot: 'only-on-failure',
@@ -30,8 +30,22 @@ const config = ({
   },
 
   reporter: [['html', { open: 'after-failure' }], ['list'],
-           //  ['json', { outputFile: 'test-results.json' }]
             ],
+            
+  projects: [
+    {
+      name: 'ui',
+      testMatch: '**/*.spec.js',
+      testIgnore: '**/*.api.spec.js'
+    },
+    {
+      name: 'api',
+      testMatch: '**/*.api.spec.js',
+      use: {
+        baseURL: process.env.API_BASE_URL || process.env.BASE_URL || 'https://automationexercise.com'
+      }
+    }
+  ]
 });
 module.exports = config;
 

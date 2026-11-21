@@ -1,8 +1,8 @@
 const {test, expect} = require('@playwright/test');
-const { createAccount } = require('../utils/createAccountApi');
-const { deleteAccount } = require('../utils/deleteAccountApi');
-const testUser = require('../testData/testUser');
-const {PageObjectManager} = require('../pageObjects/PageObjectManager')
+const { createAccount } = require('../../utils/createAccountApi');
+const { deleteAccount } = require('../../utils/deleteAccountApi');
+const testUser = require('../../testData/testUser');
+const {PageObjectManager} = require('../../pageObjects/PageObjectManager')
 
 
 test ('TC1: Register User', async ({page}) => {
