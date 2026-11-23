@@ -9,7 +9,7 @@ class HomePage {
     }
 
     async navigateTo() {
-        await this.page.goto("https://automationexercise.com/");
+        await this.page.goto('/');
     }
 }
 module.exports = {HomePage};
